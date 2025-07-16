@@ -6,16 +6,10 @@ from pydantic import BaseModel
 from typing import List
 from dotenv import load_dotenv
 
+from models.guitar_model import Guitars, Guitar
+
 load_dotenv()
 
-class Guitar(BaseModel):
-    brand: str
-    model: str
-
-
-
-class Guitars(BaseModel):
-    guitars: List[Guitar]
 
 app = FastAPI()
 
