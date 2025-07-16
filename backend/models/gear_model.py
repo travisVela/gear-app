@@ -3,11 +3,13 @@ from typing import List
 from pydantic import BaseModel
 
 
-class Guitar(BaseModel):
+class Gear(BaseModel):
     brand: str
     model: str
     serial_number: str
+    year: int
+    description: str
 
 
-class Guitars(BaseModel):
-    guitars: List[Guitar]
+class GearList(BaseModel):
+    gearlist: List[Gear]

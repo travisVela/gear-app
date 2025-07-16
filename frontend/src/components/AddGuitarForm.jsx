@@ -27,7 +27,7 @@ const AddGuitarForm = ({ addGuitar }) => {
                     value={brand}
                     onChange={(e) => setBrand(e.target.value)}
                     placeholder="Enter guitar brand"
-                    className="input border  border-gray-500 rounded-2xl w-full p-2 m-2"
+                    className="input border  border-gray-500 rounded-2xl w-full p-2 m-2 focus:border-sky-500 focus:ring-0 focus:outline-none"
                 />
             </div>
             <input
@@ -35,14 +35,14 @@ const AddGuitarForm = ({ addGuitar }) => {
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
                 placeholder="Enter guitar model"
-                className="input border border-gray-500  rounded-2xl w-full  p-2 m-2"
+                className="input border border-gray-500  rounded-2xl w-full p-2 m-2 focus:border-sky-500 focus:ring-0 focus:outline-none"
             />
             <input
                 type="text"
                 value={serial_number}
                 onChange={(e) => setSerial(e.target.value)}
                 placeholder="Enter guitar serial number"
-                className="input border border-gray-500  w-full rounded-2xl  p-2 m-2"
+                className="input border border-gray-500  w-full rounded-2xl  p-2 m-2 focus:border-sky-500 focus:ring-0 focus:outline-none"
             />
             <button className="m-2" type="submit">Add Guitar</button>
         </form>

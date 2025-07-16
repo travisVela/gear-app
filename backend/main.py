@@ -2,11 +2,10 @@ from os import getenv
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from typing import List
 from dotenv import load_dotenv
 
 from models.guitar_model import Guitars, Guitar
+from models.gear_model import Gear, GearList
 
 load_dotenv()
 
@@ -26,6 +25,7 @@ app.add_middleware(
 )
 
 memory_db = {"guitars": []}
+gear_db = {"gearlist_db": []}
 
 @app.get("/guitars", response_model=Guitars)
 def get_guitars():
@@ -35,6 +35,15 @@ def get_guitars():
 def add_guitar(guitar: Guitar):
     memory_db["guitars"].append(guitar)
     return guitar
+
+@app.get("/gearlist", response_model=GearList)
+def get_guitars():
+    return GearList(gearlist=gear_db["gearlist_db"])
+
+@app.post("/gearlist")
+def add_guitar(gear: Gear):
+    gear_db["gearlist_db"].append(gear)
+    return gear
 
 '''
 alternative way to run the app
