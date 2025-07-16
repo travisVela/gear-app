@@ -6,7 +6,7 @@ import GuitarList from "./components/Guitars";
 
 const App = () => {
   return (
-    <div className="App">
+    <div className="flex flex-col p-4 w-full items-center justify-center">
       <header className="App-header">
         <h1>Guitar Management App</h1>
       </header>
