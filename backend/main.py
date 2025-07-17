@@ -24,17 +24,24 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-memory_db = {"guitars": []}
+'''
+ORIGINAL GUITAR APP ENDPOINTS
+'''
+# memory_db = {"guitars": []}
+# @app.get("/guitars", response_model=Guitars)
+# def get_guitars():
+#     return Guitars(guitars=memory_db["guitars"])
+#
+# @app.post("/guitars")
+# def add_guitar(guitar: Guitar):
+#     memory_db["guitars"].append(guitar)
+#     return guitar
+
+'''
+END
+'''
+
 gear_db = {"gearlist_db": []}
-
-@app.get("/guitars", response_model=Guitars)
-def get_guitars():
-    return Guitars(guitars=memory_db["guitars"])
-
-@app.post("/guitars")
-def add_guitar(guitar: Guitar):
-    memory_db["guitars"].append(guitar)
-    return guitar
 
 @app.get("/gearlist", response_model=GearList)
 def get_guitars():
