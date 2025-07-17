@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import {SelectDefault} from "./InputSelect";
+import Selector from "./InputSelect";
 
 
 
@@ -25,16 +25,15 @@ const AddGearForm = ({ addGear }) => {
     }
 
     return (
-        <form className="my-4 w-50 flex flex-col" onSubmit={handleSubmit}>
-            <div className="form-control">
-                <input
-                    type="text"
-                    value={brand}
-                    onChange={(e) => setBrand(e.target.value)}
-                    placeholder="Enter brand"
-                    className="input border  border-gray-500 rounded-2xl w-full p-2 m-2 focus:border-sky-500 focus:ring-0 focus:outline-none"
-                />
-            </div>
+        <form className="my-4 w-50 flex flex-col justify-items-center" onSubmit={handleSubmit}>
+            <Selector />
+            <input
+                type="text"
+                value={brand}
+                onChange={(e) => setBrand(e.target.value)}
+                placeholder="Enter brand"
+                className="input border  border-gray-500 rounded-2xl w-full p-2 m-2 focus:border-sky-500 focus:ring-0 focus:outline-none"
+            />
             <input
                 type="text"
                 value={model}
@@ -63,7 +62,7 @@ const AddGearForm = ({ addGear }) => {
                 placeholder="Enter description"
                 className="input border border-gray-500  w-full rounded-2xl  p-2 m-2 focus:border-sky-500 focus:ring-0 focus:outline-none"
             />
-            <SelectDefault />
+
             <button className="m-2" type="submit">Add Gear</button>
         </form>
     )
