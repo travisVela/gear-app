@@ -240,6 +240,9 @@ marimo/_lsp/
 __marimo__/
 /todo/
 
+*.db
+
+
 
 public/build/tailwind.css
 

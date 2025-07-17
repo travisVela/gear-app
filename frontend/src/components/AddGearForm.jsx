@@ -11,6 +11,7 @@ const AddGearForm = ({addGear}) => {
     const [year, setYear] = useState("")
     const [description, setDescription] = useState("")
 
+
     const options = [
         {value: 'guitar', label: 'guitar'},
         {value: 'bass', label: 'bass'},
@@ -21,8 +22,10 @@ const AddGearForm = ({addGear}) => {
 
     const handleSelect = (e) => {
         console.log(e)
+
         return setType(e.value)
     }
+    const selectedType = type ? type : "Select"
 
 
     const handleSubmit = (e) => {
@@ -42,19 +45,14 @@ const AddGearForm = ({addGear}) => {
 
     return (
         <form className="my-4  flex flex-col justify-items-center" onSubmit={handleSubmit}>
-
-            {/*<Selector*/}
-            {/*    type="text"*/}
-            {/*    value={type}*/}
-            {/*    onChange={handleSelect}*/}
-            {/*/>*/}
             <div className={"flex flex-row w-full"}>
                 <div className={"flex flex-col w-50"}>
                     <Select
-                        className={"flex flex-col text-gray-900 w-50"}
                         options={options}
                         value={type}
                         onChange={handleSelect}
+                        placeholder={selectedType}
+                        className={`flex flex-col text-gray-900 w-50 ${selectedType !== "Select" ? "text-gray-900" : ""}`}
                     />
                 </div>
                 <div className={"flex flex-col w-50"}>

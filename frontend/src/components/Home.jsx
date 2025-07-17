@@ -75,9 +75,9 @@ const GearList = () => {
 
                 {/*inventory column*/}
                 {gearlist.length < 1 ? <h1 className={"animate-pulse"}>...</h1> :
-                    <div className="container flex flex-col items-center justify-start p-8 h-lvh">
+                    <div className="container w-full flex flex-col items-center justify-start p-8 h-lvh">
                         <h2 className="p-2 text-2xl">Gear List</h2>
-                        <table className={"w-3/4"}>
+                        <table className={"w-full"}>
                             <thead>
                             <tr className="flex flex-row  border-b border-b-sky-500  items-start justify-start w-full gap-10 space-x-3">
                                 {columns.map((column, index) => (
@@ -95,7 +95,7 @@ const GearList = () => {
                                 >
                                     {columns.map((column, colIndex) => (
                                         <td onClick={column.accessor === 'description' ? () => toggleDialog(item.description) : undefined}
-                                            className={`py-2 flex flex-col w-full ${column.accessor === "description" ? "max-h-20 overflow-x-hidden hover:cursor-pointer hover:text-sky-500" : ""}`}
+                                            className={`py-2 flex flex-col w-full ${column.accessor === "description" ? "max-h-20 overflow-hidden hover:cursor-pointer text-sky-500 hover:text-sky-700 overflow-ellipsis min-w-24 underline" : ""}`}
                                             key={`cell-${rowIndex}-${colIndex}`}>{item[column.accessor]}
 
                                         </td>
