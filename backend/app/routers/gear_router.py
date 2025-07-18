@@ -30,14 +30,16 @@ user_dependency = Annotated[dict, Depends(get_current_user)]
 @router.get("/", status_code=status.HTTP_200_OK)
 def get_gear(user: user_dependency, db: db_dependency):
 
+    print(f"get gear user: ${user}")
     if not user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail="Unauthorized to get gear")
     return db.query(Gear).filter(Gear.owner_id == user.get("id")).all()
 
-@router.post("/gear", status_code=status.HTTP_201_CREATED)
+@router.post("/add", status_code=status.HTTP_201_CREATED)
 def add_gear(user: user_dependency, db: db_dependency, item: GearBaseModel):
+    print(f"add gear user: ${user}")
     if not user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+        raise HTTPException(status_code=401, detail="Unauthorized to save gear")
     new_item = Gear(**item.model_dump(), owner_id=user.get("id"))
     db.add(new_item)
     db.commit()

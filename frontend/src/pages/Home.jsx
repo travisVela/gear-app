@@ -1,11 +1,14 @@
 import React, {useEffect, useRef, useState} from 'react';
 
-import api from '../api';
-import AddGearForm from "./AddGearForm.jsx";
-import Dialog from "./Dialog.jsx";
+// import api from '../api.js';
+import AddGearForm from "../components/AddGearForm.jsx";
+import Dialog from "../components/Dialog.jsx";
+import {api} from "../api"
 
-const GearList = () => {
-    const [gearlist, setGearList] = useState([]);
+const Home = () => {
+    const {get_gear, save_new_gear, authUserGear} = api()
+    const [gearList , setGearList] = useState(null)
+
     const [dialogContent, setDialogContent] = useState(null)
     const dialogRef = useRef(null)
 
@@ -18,35 +21,31 @@ const GearList = () => {
         {header: 'Description', accessor: 'description'},
     ];
 
+
+
+    useEffect(() => {
+        get_gear()
+      }, [get_gear]);
+
+
     function toggleDialog(item) {
         if (!dialogRef) {
             return
         }
+
         setDialogContent(item)
         dialogRef.current.hasAttribute("open")
             ? dialogRef.current.close(setDialogContent(null))
             : dialogRef.current.showModal()
     }
 
-    useEffect(() => {
-        fetchGearList();
-    }, []);
+
 
     // API ENDPOINTS
 
-    const fetchGearList = async () => {
-        try {
-            const response = await api.get('/gearlist');
-            setGearList(response.data.gearlist);
-
-        } catch (error) {
-            console.error("Error fetching gear", error);
-        }
-    };
-
     const addGear = async (type, brand, model, serial_number, year, description) => {
         try {
-            await api.post('/gearlist', {
+            await save_new_gear( {
                 type: type,
                 brand: brand,
                 model: model,
@@ -54,11 +53,8 @@ const GearList = () => {
                 year: year,
                 description: description
             });
-            fetchGearList();
-
-            console.log(type)
-            console.log(brand)
-            // Refresh the list after adding a fruit
+            // Refresh
+            get_gear
         } catch (error) {
             console.error("Error adding gear", error);
         }
@@ -74,7 +70,7 @@ const GearList = () => {
             <div className="flex flex-row items-center w-full justify-center h-3/4">
 
                 {/*inventory column*/}
-                {gearlist.length < 1 ? <h1 className={"animate-pulse"}>...</h1> :
+                {authUserGear > 0  ? <h1 className={"animate-pulse"}>...</h1> :
                     <div className="container w-full flex flex-col items-center justify-start p-8 h-lvh">
                         <h2 className="p-2 text-2xl">Gear List</h2>
                         <table className={"w-full"}>
@@ -88,7 +84,7 @@ const GearList = () => {
                             </thead>
                             <tbody>
                             {/* Map over your data to render table rows and cells */}
-                            {gearlist.map((item, rowIndex) => (
+                            {authUserGear?.map((item, rowIndex) => (
                                 <tr
                                     className={`flex flex-row border-b border-b-slate-500 items-start justify-start w-full gap-10 space-x-3`}
                                     key={`row-${rowIndex}`}
@@ -122,4 +118,4 @@ const GearList = () => {
     );
 };
 
-export default GearList;
+export default Home;

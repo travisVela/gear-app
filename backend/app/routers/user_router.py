@@ -16,6 +16,7 @@ from ..database import localsession
 from ..models.gear_model import Gear, GearBaseModel
 from ..models.user_model import Users, UserBaseModel
 from ..models.token_model import Token
+from ..models.login_model import Login
 
 load_dotenv()
 router = APIRouter(
@@ -35,9 +36,10 @@ brcypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="user/token")
 
 '''
-UITL FUNCTIONS
+UTIL FUNCTIONS
 '''
 def authenticate_user(username: str, password: str, db: db_dependency):
+
     user = db.query(Users).filter(Users.username == username ).first()
 
     if not user:
@@ -64,24 +66,24 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
     except JWTError:
         raise HTTPException(status_code=401, detail="Could not validate credentials!!")
 
+
 '''
 API ENDPOINTS
 '''
-@router.post("/token", response_model=Token)
-async def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dependency):
-   user = authenticate_user(form_data.username, form_data.password, db)
-   if not user:
-       raise HTTPException(status_code=401, detail="Could not validate credentials")
 
-   token = create_token(user.username, user.id, timedelta(minutes=20))
-   return {"access_token": token, "token_type": "bearer"}
 
-@router.get("/" )
-def get_user(db: db_dependency):
-    return db.query(Users).all()
+# @router.get("/" )
+# def get_user(db: db_dependency):
+#     return db.query(Users).all()
 
-@router.post("/")
-def create_user(db: db_dependency, user: UserBaseModel):
+@router.post("/signup")
+async def create_user(db: db_dependency, user: UserBaseModel):
+    if db.query(Users).filter(Users.email == user.email).first():
+        raise HTTPException(status_code=409, detail="Email account already exists")
+
+    if db.query(Users).filter(Users.username == user.username).first():
+        raise HTTPException(status_code=409, detail="Username already exists")
+
     new_user = Users(
         username=user.username,
         email=user.email,
@@ -90,6 +92,26 @@ def create_user(db: db_dependency, user: UserBaseModel):
         lastname=user.lastname,
         bio=user.bio
     )
+
+
     db.add(new_user)
     db.commit()
+    this_user = db.query(Users).filter(Users.username == user.username).first()
+    token = create_token(user.username, this_user.id, timedelta(days=7))
+
+    return {"access_token": token, "token_type": "bearer"}
+
+@router.post("/login")
+async def login(login: Login, db: db_dependency):
+
+   user = authenticate_user(login.username, login.password, db)
+   print(f"login user: ${user.username}")
+   if not user:
+       raise HTTPException(status_code=401, detail="Could not validate credentials")
+
+
+
+   token = create_token(user.username, user.id, timedelta(days=7))
+   print(f"token: ${token}")
+   return {"access_token": token, "token_type": "bearer"}
 

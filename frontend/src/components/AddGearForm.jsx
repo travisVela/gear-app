@@ -30,7 +30,7 @@ const AddGearForm = ({addGear}) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log(e.target.value)
+
         if (brand) {
             addGear(type, brand, model, serial_number, year, description);
             setType("")
