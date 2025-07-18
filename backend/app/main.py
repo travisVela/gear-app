@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 from .models.base import Base
 from .database import engine
-from .routers import gear_router
+from .routers import gear_router, user_router
 
 app = FastAPI()
 
@@ -19,6 +19,7 @@ def health_check():
     return {"status": "Hellthy"}
 
 app.include_router(gear_router.router)
+app.include_router(user_router.router)
 
 load_dotenv()
 

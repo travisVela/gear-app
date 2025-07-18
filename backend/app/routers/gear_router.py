@@ -1,11 +1,14 @@
-from fastapi import APIRouter, Depends
+
+
+from fastapi import APIRouter, Depends, HTTPException
 # from typing import Annotated
 from sqlalchemy.orm import Session
+from starlette import status
 from typing_extensions import Annotated
 
-# from starlette import status
-
+from .user_router import get_current_user
 from ..database import localsession
+from ..models import Users
 from ..models.gear_model import Gear, GearBaseModel
 
 router = APIRouter(
@@ -21,15 +24,21 @@ def get_db():
         db.close()
 
 db_dependency = Annotated[Session, Depends(get_db)]
+user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
-@router.get("/" )
-def get_gear(db: db_dependency):
-    return db.query(Gear).all()
+@router.get("/", status_code=status.HTTP_200_OK)
+def get_gear(user: user_dependency, db: db_dependency):
 
-@router.post("/gear")
-def add_gear(db: db_dependency, item: GearBaseModel):
-    new_item = Gear(**item.model_dump())
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    return db.query(Gear).filter(Gear.owner_id == user.get("id")).all()
+
+@router.post("/gear", status_code=status.HTTP_201_CREATED)
+def add_gear(user: user_dependency, db: db_dependency, item: GearBaseModel):
+    if not user:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    new_item = Gear(**item.model_dump(), owner_id=user.get("id"))
     db.add(new_item)
     db.commit()
 

@@ -1,7 +1,5 @@
-from typing import List
-
 from pydantic import BaseModel
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, ForeignKey
 
 from .base import Base
 
@@ -15,7 +13,7 @@ class Gear(Base):
     serial_number = Column(String)
     year = Column(Integer)
     description = Column(String)
-    # owner_id = Column(Integer, ForeignKey("users.id"))
+    owner_id = Column(Integer, ForeignKey("users.id"))
 
 class GearBaseModel(BaseModel):
     type: str
