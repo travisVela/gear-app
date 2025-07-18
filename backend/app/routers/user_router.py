@@ -2,7 +2,7 @@ from datetime import datetime, timezone, timedelta
 from os import getenv
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import jwt, JWTError
 # from typing import Annotated
@@ -105,13 +105,32 @@ async def create_user(db: db_dependency, user: UserBaseModel):
 async def login(login: Login, db: db_dependency):
 
    user = authenticate_user(login.username, login.password, db)
-   print(f"login user: ${user.username}")
+   # print(f"login user: ${user.username}")
    if not user:
        raise HTTPException(status_code=401, detail="Could not validate credentials")
 
-
-
    token = create_token(user.username, user.id, timedelta(days=7))
-   print(f"token: ${token}")
+
    return {"access_token": token, "token_type": "bearer"}
+
+@router.post("/logout")
+async def logout(res: Response):
+    res.delete_cookie(key="access_token", httponly=True)
+    print(f"res: ${res}")
+    return {"message": "Logged out from backend"}
+
+
+@router.get("/checkAuth")
+async def checkAuth(req: Request):
+
+    header = req.headers.get("Authorization")
+    token = header.split(" ")[1]
+
+    payload = jwt.decode(token, getenv("SECRET_KEY"), algorithms=[getenv("ALGORITHM")])
+    username: str = payload.get("sub")
+    user_id: int = payload.get("id")
+    if not username or not user_id:
+        raise HTTPException(status_code=401, detail="Could not validate credentials")
+    return {"username": username, "id": user_id}
+
 

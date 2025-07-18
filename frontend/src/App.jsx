@@ -1,44 +1,41 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import './App.css';
-import { Routes, Route, Navigate } from "react-router-dom";
+import {Toaster} from "react-hot-toast";
 
-import GearList from "./pages/Home.jsx"
-import Home from "./pages/Home.jsx";
+import { Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
-import {Toaster} from "react-hot-toast";
+import HomePage from "./pages/HomePage.jsx"
+import {api} from "./api";
+
 
 
 const App = () => {
+    const {authUser, checkAuth} = api()
+    // console.log({"authUser": authUser})
+    useEffect(() => {
+        checkAuth()
+    }, [checkAuth]);
+
   return (
       <div className={"flex w-full items-center justify-center"}>
           <Routes>
             <Route
                 path={"/"}
-                element=<Home />
+                element={authUser ? <HomePage /> : <Navigate to={"/login"} />}
             />
               <Route
                 path={"/login"}
-                element={<LoginPage />}
+                element={!authUser ? <LoginPage /> : <Navigate to={"/"} />}
               />
               <Route
                 path={"/signup"}
-                element={<SignupPage />}
+                element={!authUser ? <SignupPage /> : <Navigate to={"/"} />}
               />
 
         </Routes>
           <Toaster></Toaster>
       </div>
-
-    // <div className="flex flex-col p-4 h-full w-full items-center justify-center">
-    //   <header className="App-header">
-    //     <h1>Gear Management App</h1>
-    //   </header>
-    //   <main>
-    //     {/*<GuitarList />*/}
-    //       <GearList />
-    //   </main>
-    // </div>
   );
 };
 
