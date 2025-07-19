@@ -1,17 +1,24 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import Select from 'react-select'
 
 
-const AddGearForm = ({addGear}) => {
-    const [type, setType] = useState(null)
+const EditGearForm = ({data, onSubmit}) => {
+    const [type, setType] = useState(data.type)
     const [brand, setBrand] = useState("")
     const [model, setModel] = useState("")
     const [serial_number, setSerial] = useState("")
     const [year, setYear] = useState("")
     const [description, setDescription] = useState("")
 
+    const [formState, setFormState] = useState(data);
 
+    useEffect(() => {
+        setFormState(data);
+      }, [data]);
+
+
+    // options for type select
     const options = [
         {value: 'guitar', label: 'guitar'},
         {value: 'bass', label: 'bass'},
@@ -21,10 +28,17 @@ const AddGearForm = ({addGear}) => {
     ]
 
     const handleSelect = (e) => {
+        console.log({"select event ": e})
 
         return setType(e.value)
     }
     const selectedType = type ? type : "Select"
+
+    const handleChange = (e) => {
+
+        const {name, value} = e.target
+        setFormState(prevState => ({ ...prevState, [name]: value }));
+    }
 
 
     const handleSubmit = (e) => {
@@ -39,6 +53,7 @@ const AddGearForm = ({addGear}) => {
             setYear("")
             setDescription("")
         }
+        onSubmit(formState);
 
     }
 
@@ -48,7 +63,8 @@ const AddGearForm = ({addGear}) => {
                 <div className={"flex flex-col w-50"}>
                     <Select
                         options={options}
-                        value={type}
+                        value={formState.type || ''}
+                        name={"type"}
                         onChange={handleSelect}
                         placeholder={selectedType}
                         className={`flex flex-col text-gray-900 w-50 ${selectedType !== "Select" ? "text-gray-900" : ""}`}
@@ -57,8 +73,9 @@ const AddGearForm = ({addGear}) => {
                 <div className={"flex flex-col w-50"}>
                     <input
                         type="text"
-                        value={brand}
-                        onChange={(e) => setBrand(e.target.value)}
+                        name={"brand"}
+                        value={formState.brand || ''}
+                        onChange={handleChange}
                         placeholder="Enter brand"
                         className="input border border-gray-500 rounded-2xl w-full p-2 m-2 focus:border-sky-500 focus:ring-0 focus:outline-none"
                     />
@@ -70,8 +87,9 @@ const AddGearForm = ({addGear}) => {
                 <div className={"flex flex-row w-50"}>
                     <input
                         type="text"
-                        value={model}
-                        onChange={(e) => setModel(e.target.value)}
+                        value={formState.model || ''}
+                        name={"model"}
+                        onChange={handleChange}
                         placeholder="Enter model"
                         className="input border border-gray-500  rounded-2xl w-full p-2 m-2 focus:border-sky-500 focus:ring-0 focus:outline-none"
                     />
@@ -79,8 +97,9 @@ const AddGearForm = ({addGear}) => {
                 <div className={"flex flex-col w-50"}>
                     <input
                         type="number"
-                        value={year}
-                        onChange={(e) => setYear(e.target.value)}
+                        name={"year"}
+                        value={formState.year || ''}
+                        onChange={handleChange}
                         placeholder="Enter year"
                         className="input border border-gray-500  w-full rounded-2xl  p-2 m-2 focus:border-sky-500 focus:ring-0 focus:outline-none"
                     />
@@ -89,25 +108,27 @@ const AddGearForm = ({addGear}) => {
             </div>
             <input
                 type="text"
-                value={serial_number}
-                onChange={(e) => setSerial(e.target.value)}
+                value={formState.serial_number || ''}
+                name={"serial_number"}
+                onChange={handleChange}
                 placeholder="Enter serial number"
                 className="input border border-gray-500  w-full rounded-2xl  p-2 m-2 focus:border-sky-500 focus:ring-0 focus:outline-none"
             />
 
             <textarea
 
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                value={formState.description || ''}
+                name={"description"}
+                onChange={handleChange}
                 placeholder="Enter description"
                 className="input border border-gray-500  w-full rounded-2xl  p-2 m-2 focus:border-sky-500 focus:ring-0 focus:outline-none"
                 rows="5"
                 cols={"40"}
             />
 
-            <button className="m-2" type="submit">Add Gear</button>
+            <button className="m-2" type="submit">Edit Gear</button>
         </form>
     )
 }
 
-export default AddGearForm;
+export default EditGearForm;

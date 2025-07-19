@@ -105,7 +105,7 @@ async def create_user(db: db_dependency, user: UserBaseModel):
 async def login(login: Login, db: db_dependency):
 
    user = authenticate_user(login.username, login.password, db)
-   # print(f"login user: ${user.username}")
+
    if not user:
        raise HTTPException(status_code=401, detail="Could not validate credentials")
 
@@ -117,7 +117,7 @@ async def login(login: Login, db: db_dependency):
 async def logout(res: Response):
     res.delete_cookie(key="access_token", httponly=True)
     print(f"res: ${res}")
-    return {"message": "Logged out from backend"}
+    return {"message": "Logged out from server"}
 
 
 @router.get("/checkAuth")
@@ -125,12 +125,13 @@ async def checkAuth(req: Request):
 
     header = req.headers.get("Authorization")
     token = header.split(" ")[1]
-
     payload = jwt.decode(token, getenv("SECRET_KEY"), algorithms=[getenv("ALGORITHM")])
     username: str = payload.get("sub")
     user_id: int = payload.get("id")
     if not username or not user_id:
         raise HTTPException(status_code=401, detail="Could not validate credentials")
     return {"username": username, "id": user_id}
+
+
 
 

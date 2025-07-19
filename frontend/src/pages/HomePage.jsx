@@ -4,13 +4,19 @@ import Navbar from "../components/Navbar.jsx"
 import AddGearForm from "../components/AddGearForm.jsx";
 import Dialog from "../components/Dialog.jsx";
 import {api} from "../api"
+import {Pencil, Trash} from "lucide-react";
+import EditFormDialog from "../components/EditFormDialog.jsx";
 
 const HomePage = () => {
-    const {get_gear, save_new_gear, userGear, authUser} = api()
+    const {get_gear, save_new_gear, userGear, authUser, delete_gear} = api()
 
 
     const [dialogContent, setDialogContent] = useState(null)
     const dialogRef = useRef(null)
+
+
+    const [isOpen, setIsOpen] = useState(false);
+    const [formData, setFormData] = useState({});
 
     const columns = [
         {header: 'Type', accessor: 'type'},
@@ -30,11 +36,25 @@ const HomePage = () => {
         if (!dialogRef) {
             return
         }
-
         setDialogContent(item)
         dialogRef.current.hasAttribute("open")
             ? dialogRef.current.close(setDialogContent(null))
             : dialogRef.current.showModal()
+    }
+
+    const handleToggleEditDialog = (item) => {
+        if (!dialogRef) {
+            return
+        }
+        setIsOpen(!isOpen)
+        setFormData(item)
+        get_gear()
+
+    };
+
+    const handleDelete = (item) => {
+        delete_gear(item.id)
+        get_gear()
     }
 
 
@@ -57,14 +77,11 @@ const HomePage = () => {
         }
     };
 
-
     return (
-
         <div className={"flex flex-col w-full"}>
             <Navbar/>
-
             <div
-                className="flex flex-row  items-center justify-center p-2 w-screen h-screen mt-2 divide-x-2 divide-sky-500">
+                className={"flex flex-row items-center justify-center p-2 w-screen h-lvh mt-2 divide-x-2 divide-sky-500"}>
 
                 {/*column to set divide*/}
                 <div className="flex flex-row items-center w-full justify-center h-3/4">
@@ -73,35 +90,59 @@ const HomePage = () => {
                     {userGear > 0 ? <h1 className={"animate-pulse"}>...</h1> :
                         <div className="container w-full flex flex-col items-center justify-start p-8 h-lvh">
                             <h2 className="p-2 text-2xl">Gear List</h2>
-                            <table className={"w-full"}>
-                                <thead>
-                                <tr className="flex flex-row  border-b border-b-sky-500  items-start justify-start w-full gap-10 space-x-3">
-                                    {columns.map((column, index) => (
-                                        <th className="py-2 flex flex-col w-full items-start"
-                                            key={`header-${index}`}>{column.header}</th>
-                                    ))}
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {/* Map over your data to render table rows and cells */}
-                                {userGear?.map((item, rowIndex) => (
-                                    <tr
-                                        className={`flex flex-row border-b border-b-slate-500 items-start justify-start w-full gap-10 space-x-3`}
-                                        key={`row-${rowIndex}`}
-                                    >
-                                        {columns.map((column, colIndex) => (
-                                            <td onClick={column.accessor === 'description' ? () => toggleDialog(item.description) : undefined}
-                                                className={`py-2 flex flex-col w-full ${column.accessor === "description" ? "max-h-20 overflow-hidden hover:cursor-pointer text-sky-500 hover:text-sky-700 overflow-ellipsis min-w-24 underline" : ""}`}
-                                                key={`cell-${rowIndex}-${colIndex}`}>{item[column.accessor]}
-
-                                            </td>
+                            <div className={"w-full"}>
+                                <div>
+                                    <div
+                                        className="flex flex-row  border-b border-b-sky-500  items-start justify-start w-full gap-10 space-x-3">
+                                        {columns.map((column, index) => (
+                                            <div className="py-2 flex flex-col w-full items-start"
+                                                 key={`header-${index}`}>{column.header}</div>
                                         ))}
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    }
+                                    </div>
+                                </div>
+                                <div>
+                                    <div
+                                        className="flex flex-col  border-b border-b-sky-500  items-start justify-start w-full gap-10 space-x-3">
+                                        {userGear?.map((item, rowIndex) => (
+                                            <div
+                                                className={`flex flex-row border-b border-b-slate-500 items-start justify-start w-full gap-10 space-x-3`}
+                                                key={`row-${rowIndex}`}
+                                            >
+                                                {columns.map((column, colIndex) => (
+                                                    <div
+                                                        onClick={column.accessor === 'description' ? () => toggleDialog(item.description) : undefined}
+                                                        className={`py-2 flex flex-col w-full ${column.accessor === "description" ? "max-h-20 overflow-hidden hover:cursor-pointer text-sky-500 hover:text-sky-700 overflow-ellipsis min-w-24 underline" : ""}`}
+                                                        key={`cell-${rowIndex}-${colIndex}`}>{item[column.accessor]}
+
+                                                    </div>
+
+                                                ))}
+                                                <div className={"flex flex-row justify-center items-center"}>
+                                                    <button onClick={() => handleToggleEditDialog(item)}><Pencil/></button>
+                                                    {isOpen && (
+                                                        <EditFormDialog
+                                                            onClose={handleToggleEditDialog} // Pass a function to close the dialog
+                                                            initialData={formData} // Pass the object to the dialog
+                                                        />
+                                                    )}
+                                                    <div>
+                                                        <button onClick={() => handleDelete(item)}>
+                                                            <Trash>
+                                                            </Trash>
+
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                        ))}
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>}
+
                 </div>
                 {/*form column*/}
                 <div className="container h-lvh flex flex-col flex-6/8 justify-center items-center">
@@ -112,11 +153,10 @@ const HomePage = () => {
                     {dialogContent}
                 </Dialog>
 
-
             </div>
-        </div>
 
-    );
-};
+        </div>
+    )
+}
 
 export default HomePage;

@@ -23,7 +23,6 @@ export const api = create((set, get) => ({
         }
 
     },
-
     signup: async (data) => {
         try {
             const res = await axiosInstance.post("/user/signup", data)
@@ -42,8 +41,7 @@ export const api = create((set, get) => ({
             set({authUser: res.data})
             toast.success("Logged in successfully");
         } catch (error) {
-            console.log(error.message)
-            toast.error(error.message)
+            toast.error(error.response.data.detail)
         }
     },
     logout: async () => {
@@ -90,6 +88,34 @@ export const api = create((set, get) => ({
             set({userGear: res.data})
         } catch (error) {
             console.log(error)
+            toast.error(error.response.data.detail)
+        }
+    },
+    edit_gear: async (data) => {
+        try {
+            const token = localStorage.getItem("jwt")
+            const res = await axiosInstance.put(`gear/edit_item/${data.id}`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+        } catch (error) {
+            console.log(error.response)
+        }
+    },
+    delete_gear: async (data) => {
+        try {
+            // console.log(data)
+            const token = localStorage.getItem("jwt")
+             const res = await axiosInstance.delete(`/gear/delete/${data}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+
+        } catch (error) {
+            console.log(error)
+
         }
     }
 
