@@ -36,6 +36,7 @@ const HomePage = () => {
         if (!dialogRef) {
             return
         }
+
         setDialogContent(item)
         dialogRef.current.hasAttribute("open")
             ? dialogRef.current.close(setDialogContent(null))
@@ -79,7 +80,6 @@ const HomePage = () => {
 
     return (
         <div className={"flex flex-col w-full"}>
-            <Navbar/>
             <div
                 className={"flex flex-row items-center justify-center p-2 w-screen h-lvh mt-2 divide-x-2 divide-sky-500"}>
 
@@ -88,7 +88,7 @@ const HomePage = () => {
 
                     {/*inventory column*/}
                     {userGear > 0 ? <h1 className={"animate-pulse"}>...</h1> :
-                        <div className="container w-full flex flex-col items-center justify-start p-8 h-lvh">
+                        <div className="container w-full flex flex-col items-center justify-start p-8 h-lvh overflow-y-scroll">
                             <h2 className="p-2 text-2xl">Gear List</h2>
                             <div className={"w-full"}>
                                 <div>
@@ -110,10 +110,11 @@ const HomePage = () => {
                                             >
                                                 {columns.map((column, colIndex) => (
                                                     <div
-                                                        onClick={column.accessor === 'description' ? () => toggleDialog(item.description) : undefined}
-                                                        className={`py-2 flex flex-col w-full ${column.accessor === "description" ? "max-h-20 overflow-hidden hover:cursor-pointer text-sky-500 hover:text-sky-700 overflow-ellipsis min-w-24 underline" : ""}`}
-                                                        key={`cell-${rowIndex}-${colIndex}`}>{item[column.accessor]}
 
+                                                        onClick={column.accessor === 'description' ? () => toggleDialog(item.description) : undefined}
+                                                        className={`py-2 flex flex-col w-full ${column.accessor === "description" ? "max-h-20 overflow-hidden overflow-ellipsis text-nowrap hover:cursor-pointer text-sky-500 hover:text-sky-700  min-w-24 underline " : ""}`}
+                                                        key={`cell-${rowIndex}-${colIndex}`}>
+                                                            {column.accessor === "description" ? "description" : item[column.accessor]}
                                                     </div>
 
                                                 ))}
@@ -121,8 +122,8 @@ const HomePage = () => {
                                                     <button onClick={() => handleToggleEditDialog(item)}><Pencil/></button>
                                                     {isOpen && (
                                                         <EditFormDialog
-                                                            onClose={handleToggleEditDialog} // Pass a function to close the dialog
-                                                            initialData={formData} // Pass the object to the dialog
+                                                            onClose={handleToggleEditDialog}
+                                                            initialData={formData}
                                                         />
                                                     )}
                                                     <div>
@@ -134,10 +135,7 @@ const HomePage = () => {
                                                     </div>
                                                 </div>
                                             </div>
-
-
                                         ))}
-
                                     </div>
                                 </div>
                             </div>

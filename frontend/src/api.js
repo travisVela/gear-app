@@ -6,8 +6,8 @@ import toast from "react-hot-toast";
 
 export const api = create((set, get) => ({
     userGear: null,
-    token: null,
     authUser: null,
+    userInfo: null,
 
     checkAuth: async () => {
         try {
@@ -59,6 +59,19 @@ export const api = create((set, get) => ({
             set({authUser: null})
             toast.success(res.data.message);
 
+        } catch (error) {
+            console.log(error)
+        }
+    },
+    get_user_info: async () => {
+        try {
+            const token = localStorage.getItem("jwt")
+            const res = await axiosInstance.get("user/get_user_info", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            set({userInfo: res.data})
         } catch (error) {
             console.log(error)
         }

@@ -4,14 +4,11 @@ const Dialog = forwardRef(({children, toggleDialog}, ref) => {
     const [isopen, setIsOpen] = useState(false)
 
     const handleClick = (e) => {
-        // setIsOpen(!isopen)
 
         if (e.currentTarget === e.target) {
-
             toggleDialog()
             setIsOpen(!isopen)
         }
-        console.log(isopen)
     }
     return (
         <dialog

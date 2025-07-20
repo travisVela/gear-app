@@ -9,8 +9,7 @@ from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 from typing_extensions import Annotated
 from passlib.context import CryptContext
-
-# from starlette import status
+from starlette import status
 
 from ..database import localsession
 from ..models.gear_model import Gear, GearBaseModel
@@ -32,6 +31,7 @@ def get_db():
         db.close()
 
 db_dependency = Annotated[Session, Depends(get_db)]
+
 brcypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 oauth2_bearer = OAuth2PasswordBearer(tokenUrl="user/token")
 
@@ -72,11 +72,7 @@ API ENDPOINTS
 '''
 
 
-# @router.get("/" )
-# def get_user(db: db_dependency):
-#     return db.query(Users).all()
-
-@router.post("/signup")
+@router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def create_user(db: db_dependency, user: UserBaseModel):
     if db.query(Users).filter(Users.email == user.email).first():
         raise HTTPException(status_code=409, detail="Email account already exists")
@@ -101,7 +97,7 @@ async def create_user(db: db_dependency, user: UserBaseModel):
 
     return {"access_token": token, "token_type": "bearer"}
 
-@router.post("/login")
+@router.post("/login", status_code=status.HTTP_200_OK)
 async def login(login: Login, db: db_dependency):
 
    user = authenticate_user(login.username, login.password, db)
@@ -113,25 +109,37 @@ async def login(login: Login, db: db_dependency):
 
    return {"access_token": token, "token_type": "bearer"}
 
-@router.post("/logout")
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(res: Response):
     res.delete_cookie(key="access_token", httponly=True)
     print(f"res: ${res}")
     return {"message": "Logged out from server"}
 
 
-@router.get("/checkAuth")
+@router.get("/checkAuth", status_code=status.HTTP_200_OK)
 async def checkAuth(req: Request):
 
     header = req.headers.get("Authorization")
     token = header.split(" ")[1]
-    payload = jwt.decode(token, getenv("SECRET_KEY"), algorithms=[getenv("ALGORITHM")])
-    username: str = payload.get("sub")
-    user_id: int = payload.get("id")
-    if not username or not user_id:
+    print(f"tokennn: ${token}")
+    user = await get_current_user(token)
+    if not user:
         raise HTTPException(status_code=401, detail="Could not validate credentials")
-    return {"username": username, "id": user_id}
+    return {"username": user.get("username"), "id": user.get("id")}
 
+@router.get("/get_user_info", response_model=UserBaseModel, status_code=status.HTTP_200_OK)
+async def get_user_info(req: Request, db: db_dependency, res: Response):
+    header = req.headers.get("Authorization")
+    token = header.split(" ")[1]
+
+    user = await get_current_user(token)
+
+    user_info = db.query(Users).filter(Users.id == user.get("id")).first()
+    if not user:
+        raise HTTPException(status_code=401, detail="Could not validate credentials")
+    if not user_info:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user_info
 
 
 

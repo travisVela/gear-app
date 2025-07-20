@@ -1,6 +1,4 @@
 import React from 'react';
-import AddGuitarForm from "./AddGuitarForm.jsx";
-import AddGearForm from "./AddGearForm.jsx";
 import EditGearForm from "./EditGearForm.jsx";
 import {api} from "../api.js";
 

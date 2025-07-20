@@ -25,7 +25,7 @@ const LoginPage = () => {
       };
 
     return (
-        <div className={"flex flex-col h-screen w-1/2 justify-center items-center"}>
+        <div className={"flex flex-col h-screen justify-center items-center"}>
         <form className="my-4  flex flex-col justify-center items-center" onSubmit={handleSubmit}>
             <div className={"flex flex-row w-full"}>
                 <div className={"flex flex-col w-50"}>

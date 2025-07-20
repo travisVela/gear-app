@@ -1,12 +1,14 @@
 import React, {useEffect} from 'react';
 import './App.css';
-import {Toaster} from "react-hot-toast";
-
 import { Routes, Route, Navigate } from "react-router-dom";
+
+import {Toaster} from "react-hot-toast";
+import {api} from "./api";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import HomePage from "./pages/HomePage.jsx"
-import {api} from "./api";
+import ProfilePage from "./pages/ProfilePage.jsx";
+import Navbar from "./components/Navbar.jsx";
 
 
 
@@ -18,7 +20,8 @@ const App = () => {
     }, [checkAuth]);
 
   return (
-      <div className={"flex w-full items-center justify-center"}>
+      <div>
+          <Navbar/>
           <Routes>
             <Route
                 path={"/"}
@@ -32,6 +35,12 @@ const App = () => {
                 path={"/signup"}
                 element={!authUser ? <SignupPage /> : <Navigate to={"/"} />}
               />
+              <Route
+                path={"/profile"}
+                element={authUser ? <ProfilePage /> : <Navigate to={"/login"}/>}
+
+              />
+
 
         </Routes>
           <Toaster></Toaster>
