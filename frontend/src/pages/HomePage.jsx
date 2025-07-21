@@ -1,18 +1,15 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {Pencil, Trash} from "lucide-react";
 
-import Navbar from "../components/Navbar.jsx"
 import AddGearForm from "../components/AddGearForm.jsx";
 import Dialog from "../components/Dialog.jsx";
 import {api} from "../api"
-import {Pencil, Trash} from "lucide-react";
 import EditFormDialog from "../components/EditFormDialog.jsx";
 
 const HomePage = () => {
     const {get_gear, save_new_gear, userGear, authUser, delete_gear} = api()
-
-
     const [dialogContent, setDialogContent] = useState(null)
-    const dialogRef = useRef(null)
+    const ref = useRef(null)
 
 
     const [isOpen, setIsOpen] = useState(false);
@@ -33,20 +30,17 @@ const HomePage = () => {
     }, [get_gear]);
 
     function toggleDialog(item) {
-        if (!dialogRef) {
+        if (!ref) {
             return
         }
-
         setDialogContent(item)
-        dialogRef.current.hasAttribute("open")
-            ? dialogRef.current.close(setDialogContent(null))
-            : dialogRef.current.showModal()
+        ref.current.hasAttribute("open")
+            ? ref.current.close(setDialogContent(null))
+            : ref.current.showModal()
     }
 
     const handleToggleEditDialog = (item) => {
-        if (!dialogRef) {
-            return
-        }
+
         setIsOpen(!isOpen)
         setFormData(item)
         get_gear()
@@ -147,7 +141,7 @@ const HomePage = () => {
                     <h2 className="text-3xl ">Add gear here.</h2>
                     <AddGearForm addGear={addGear}/>
                 </div>
-                <Dialog toggleDialog={toggleDialog} ref={dialogRef}>
+                <Dialog toggleDialog={toggleDialog} ref={ref}>
                     {dialogContent}
                 </Dialog>
 

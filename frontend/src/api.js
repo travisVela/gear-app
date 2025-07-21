@@ -76,6 +76,20 @@ export const api = create((set, get) => ({
             console.log(error)
         }
     },
+    edit_user: async (data) => {
+        try {
+            const token = localStorage.getItem("jwt")
+
+            const res = await axiosInstance.put(`user/edit_user`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            console.log(res)
+        } catch (error) {
+            console.log(error)
+        }
+    },
     get_gear: async () => {
         try {
             const token = localStorage.getItem("jwt")

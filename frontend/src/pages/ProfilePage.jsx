@@ -1,25 +1,71 @@
-import {CardSim, Eye, EyeOff} from "lucide-react";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {api} from "../api.js";
-import {Card, CardBody, CardHeader} from "@material-tailwind/react";
+
 import img from "../assets/react.svg"
 
+import EditBioDialog from "../components/EditBioDialog.jsx";
+
+
 const ProfilePage = () => {
-    const [show, setShow] = useState(true)
+    const [isRefOpen, setIsRefOpen] = useState(false)
+    const [isdropdownRefOpen, setisdropdownRefOpen] = useState(false)
+
+    const ref = useRef(null)
+    const dropdownRef = useRef(null)
+    const [formData, setFormData] = useState({})
     const {get_user_info, userInfo} = api()
-    console.log(userInfo)
+
 
     useEffect(() => {
+
         get_user_info()
     }, [get_user_info]);
 
+    useEffect(() => {
+        if (isRefOpen) {
+      ref.current?.showModal();
+    } else {
+      ref.current?.close();
+    }
+    }, [isRefOpen])
+
+    useEffect(() => {
+        if (isdropdownRefOpen) {
+     dropdownRef.current?.showModal();
+    } else {
+     dropdownRef.current?.close();
+    }
+    }, [isdropdownRefOpen])
+
+
+
     const handleDropdown = () => {
-        console.log("clicked dropdown")
-        setShow(!show)
+        if (!dropdownRef) {
+            return
+        }
+        setisdropdownRefOpen(true)
+        dropdownRef.current.hasAttribute("open")
+            ? dropdownRef.current.close()
+            : dropdownRef.current.showModal()
     }
 
-    const handleSubmit = () => {
-        console.log()
+    function toggleEditBioDialog() {
+        if (!ref) {
+            return
+        }
+        setisdropdownRefOpen(false)
+        setIsRefOpen(true)
+        setFormData(userInfo)
+        ref.current.hasAttribute("open")
+            ? ref.current.close()
+            : ref.current.showModal()
+        get_user_info()
+
+    }
+
+    const handleClose = () => {
+       setisdropdownRefOpen(false)
+
     }
 
     return (
@@ -31,6 +77,7 @@ const ProfilePage = () => {
                             className="inline-block text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-1.5"
                             type="button"
                             onClick={handleDropdown}
+                            onCancel={() => setisdropdownRefOpen(false)}
                     >
                         <span className="sr-only">Open dropdown</span>
                         <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -40,26 +87,31 @@ const ProfilePage = () => {
                                 d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
                         </svg>
                     </button>
-                     {/*position: absolute; inset: 0px auto auto 0px; margin: 0px; transform: translate3d(574px, 79px, 0px);*/}
-                    <div id="dropdown"
-                         className={`z-10 ${!show ? "hidden" : "absolute m-0 transform translate-12 "} text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-30 dark:bg-gray-700`}>
+                    {/*${!show ? "hidden" : "absolute m-0 transform translate-12 z-10"}*/}
+                    <dialog ref={dropdownRef}
+                            className={`absolute top-1/2 left-1/2 transform translate-x-8 -translate-y-6 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-30 dark:bg-gray-700`}
+                            onClick={(e) => {
+                                if (e.currentTarget === e.target) {
+                                    handleDropdown();
+                                }
+                            }}
+
+                    >
 
                         <ul className="py-2" aria-labelledby="dropdownButton">
                             <li>
-                                <a href="#"
-                                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Edit</a>
+                                <div
+                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                                    onClick={() => toggleEditBioDialog()}
+                                >Edit
+                                </div>
                             </li>
-                            {/*<li>*/}
-                            {/*    <a href="#"*/}
-                            {/*       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Export*/}
-                            {/*        Data</a>*/}
-                            {/*</li>*/}
                             <li>
                                 <a href="#"
                                    className="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Delete</a>
                             </li>
                         </ul>
-                    </div>
+                    </dialog>
                 </div>
                 <div className="flex flex-col items-center pb-10">
                     <img className="w-24 h-24 mb-3 rounded-full shadow-lg" src={img}
@@ -68,14 +120,25 @@ const ProfilePage = () => {
                     <span className="text-sm text-gray-500 dark:text-gray-400">Visual Designer</span>
                     <div className="flex mt-4 md:mt-6">
                         <a href="#"
-                           className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Add
-                            friend</a>
+                           className="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+
+                        >Edit Bio
+
+                        </a>
                         <a href="#"
                            className="py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">Message</a>
                     </div>
                 </div>
+                <EditBioDialog
+                    toggleDialog={toggleEditBioDialog}
+                    initialData={formData}
+                    ref={ref}
+                    onClose={toggleEditBioDialog}
+                />
             </div>
         </div>
+
+
     )
 
 }

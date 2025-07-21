@@ -121,7 +121,7 @@ async def checkAuth(req: Request):
 
     header = req.headers.get("Authorization")
     token = header.split(" ")[1]
-    print(f"tokennn: ${token}")
+
     user = await get_current_user(token)
     if not user:
         raise HTTPException(status_code=401, detail="Could not validate credentials")
@@ -140,6 +140,30 @@ async def get_user_info(req: Request, db: db_dependency, res: Response):
     if not user_info:
         raise HTTPException(status_code=404, detail="User not found")
     return user_info
+
+@router.put("/edit_user", status_code=status.HTTP_200_OK)
+async def edit_user(db: db_dependency, data: UserBaseModel, req: Request):
+    header = req.headers.get("Authorization")
+    token = header.split(" ")[1]
+    user = await get_current_user(token)
+    print(f"data: ${data}")
+
+    this_user = db.query(Users).filter(Users.id == user.get("id")).first()
+    print(f"this_user: ${this_user}")
+
+
+    # if db.query(Users).filter(Users.username == um.username).first():
+    #     raise HTTPException(status_code=409, detail="Username already exists")
+
+    this_user.username = data.username
+    this_user.email = data.email
+    this_user.firstname = data.firstname
+    this_user.lastname = data.lastname
+    this_user.bio = data.bio
+
+    db.add(this_user)
+    db.commit()
+
 
 
 
