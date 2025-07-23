@@ -5,6 +5,7 @@ from passlib.handlers.django import django_pbkdf2_sha1
 # from typing import Annotated
 from sqlalchemy.orm import Session
 from starlette import status
+from starlette.requests import Request
 from typing_extensions import Annotated
 
 from .user_router import get_current_user
@@ -29,9 +30,12 @@ user_dependency = Annotated[dict, Depends(get_current_user)]
 
 
 @router.get("/", status_code=status.HTTP_200_OK)
-def get_gear(user: user_dependency, db: db_dependency):
+async def get_gear(user: user_dependency, db: db_dependency, req: Request):
+    # token = req.headers.get("authorization")
+    # user = await get_current_user(token)
 
-    # print(f"get gear user: ${user}")
+
+    print(f"get gear user: ${user}")
     if not user:
         raise HTTPException(status_code=401, detail="Unauthorized to get gear")
     return db.query(Gear).filter(Gear.owner_id == user.get("id")).all()

@@ -63,11 +63,6 @@ const ProfilePage = () => {
 
     }
 
-    const handleClose = () => {
-       setisdropdownRefOpen(false)
-
-    }
-
     return (
         <div className={"flex container flex-col w-full items-center justify-center h-lvh"}>
             <div

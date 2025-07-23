@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import { Routes, Route, Navigate } from "react-router-dom";
 
@@ -13,11 +13,15 @@ import Navbar from "./components/Navbar.jsx";
 
 
 const App = () => {
-    const {authUser, checkAuth} = api()
-    // console.log({"authUser": authUser})
+    const {checkAuth} = api()
+    const token = localStorage.getItem('jwt')
+    const [authUser, setAuthUser] = useState()
     useEffect(() => {
         checkAuth()
-    }, [checkAuth]);
+
+        setAuthUser(token)
+
+    }, []);
 
   return (
       <div>

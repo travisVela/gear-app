@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { axiosInstance } from "./lib/axios.js";
 import toast from "react-hot-toast";
 
-
+const token = localStorage.getItem('jwt')
 
 export const api = create((set, get) => ({
     userGear: null,
@@ -11,13 +11,14 @@ export const api = create((set, get) => ({
 
     checkAuth: async () => {
         try {
-            const token = localStorage.getItem("jwt")
-            const res = await axiosInstance.get("/user/checkAuth", {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-             set({authUser: res.data})
+
+            // if (localStorage.getItem(('jwt')))
+            //     set({authUser: localStorage.getItem('jwt')})
+
+            const res = await axiosInstance.get("/user/checkAuth")
+            set({authUser: res.data})
+            console.log(res.data)
+
         } catch (error) {
             console.log(error.message)
         }
@@ -35,9 +36,8 @@ export const api = create((set, get) => ({
     },
     login: async (data) => {
         try {
-
             const res = await axiosInstance.post("/user/login", data)
-            localStorage.setItem("jwt", res.data.access_token)
+            // localStorage.setItem("jwt", res.data.access_token)
             set({authUser: res.data})
             toast.success("Logged in successfully");
         } catch (error) {
@@ -65,7 +65,7 @@ export const api = create((set, get) => ({
     },
     get_user_info: async () => {
         try {
-            const token = localStorage.getItem("jwt")
+
             const res = await axiosInstance.get("user/get_user_info", {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -92,13 +92,8 @@ export const api = create((set, get) => ({
     },
     get_gear: async () => {
         try {
-            const token = localStorage.getItem("jwt")
-            const res = await axiosInstance.get("/gear", {
-                headers : {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            set({userGear: res.data})
+            const res = await axiosInstance.get("/gear/")
+            await set({userGear: res.data})
         } catch (error) {
             console.log(error)
             toast.error(error.response.data.detail)

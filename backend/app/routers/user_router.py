@@ -115,23 +115,18 @@ async def logout(res: Response):
     print(f"res: ${res}")
     return {"message": "Logged out from server"}
 
-
 @router.get("/checkAuth", status_code=status.HTTP_200_OK)
 async def checkAuth(req: Request):
-
-    header = req.headers.get("Authorization")
-    token = header.split(" ")[1]
-
+    token = req.headers.get("authorization")
     user = await get_current_user(token)
+
     if not user:
         raise HTTPException(status_code=401, detail="Could not validate credentials")
     return {"username": user.get("username"), "id": user.get("id")}
 
 @router.get("/get_user_info", response_model=UserBaseModel, status_code=status.HTTP_200_OK)
 async def get_user_info(req: Request, db: db_dependency, res: Response):
-    header = req.headers.get("Authorization")
-    token = header.split(" ")[1]
-
+    token = req.headers.get("authorization")
     user = await get_current_user(token)
 
     user_info = db.query(Users).filter(Users.id == user.get("id")).first()
@@ -143,15 +138,10 @@ async def get_user_info(req: Request, db: db_dependency, res: Response):
 
 @router.put("/edit_user", status_code=status.HTTP_200_OK)
 async def edit_user(db: db_dependency, data: UserBaseModel, req: Request):
-    header = req.headers.get("Authorization")
-    token = header.split(" ")[1]
+    token = req.headers.get("authorization")
     user = await get_current_user(token)
-    print(f"data: ${data}")
-
+    print(f"update user: ${token}")
     this_user = db.query(Users).filter(Users.id == user.get("id")).first()
-    print(f"this_user: ${this_user}")
-
-
     # if db.query(Users).filter(Users.username == um.username).first():
     #     raise HTTPException(status_code=409, detail="Username already exists")
 
